@@ -1,0 +1,53 @@
+# Render.com Deployment Configuration
+# Infrastructure as Code for OpenCode Web Server
+
+services:
+  - type: web
+    name: opencode-web
+    env: docker
+
+    # Plan: Free tier (512MB RAM, 0.1 CPU shared)
+    # Perfect for occasional use - sleeps after 15min inactivity
+    plan: free
+
+    # Region: Singapore (closest to India)
+    # Alternative: Oregon if Singapore has issues
+    region: singapore
+
+    # Docker configuration
+    dockerfilePath: ./Dockerfile
+
+    # Auto-deploy on git push to main branch
+    autoDeploy: true
+
+    # Environment variables
+    # These will be set in Render Dashboard
+    envVars:
+      # Authentication credentials
+      - key: OPENCODE_SERVER_PASSWORD
+        generateValue: true # Render auto-generates secure password
+
+      - key: OPENCODE_SERVER_USERNAME
+        value: admin
+
+      # Node environment
+      - key: NODE_ENV
+        value: production
+
+    # Health check configuration
+    # Render pings this endpoint to verify service is healthy
+    healthCheckPath: /global/health
+
+    # Build configuration
+    buildCommand: echo "Using Docker, no build command needed"
+
+    # Start command (handled by Dockerfile CMD)
+    # No startCommand needed - Docker CMD is used
+
+# Deployment notes:
+# 1. Push this repo to GitHub
+# 2. Connect GitHub repo to Render
+# 3. Render will automatically detect render.yaml
+# 4. Service will deploy with all configuration above
+# 5. Access at: https://opencode-web-xxxx.onrender.com
+# 6. Get password from Render Dashboard > Environment tab

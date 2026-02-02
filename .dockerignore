@@ -1,0 +1,54 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Environment files (handled separately)
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# OpenCode local data
+.opencode/
+*.db
+
+# Node modules (will be installed in container)
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+test/
+tests/
+*.test.js
+*.spec.js
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts
+dist/
+build/
