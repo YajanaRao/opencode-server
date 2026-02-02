@@ -2,9 +2,6 @@
 # Base image: Alpine Linux (minimal and secure)
 FROM alpine:3.19
 
-# OpenCode version to install
-ARG OPENCODE_VERSION=1.1.48
-
 # Set working directory
 WORKDIR /app
 
@@ -15,15 +12,21 @@ RUN apk add --no-cache \
     git \
     openssh-client \
     ca-certificates \
-    wget
+    wget \
+    jq
 
-# Download OpenCode binary directly from GitHub releases
-# This avoids the install script's version fetch issues
-RUN ARCH="$(uname -m)" && \
+# Download OpenCode binary - fetch latest version from GitHub
+# Automatically gets the latest release every time you build
+RUN echo "Fetching latest OpenCode version..." && \
+    LATEST_VERSION=$(curl -fsSL https://api.github.com/repos/anomalyco/opencode/releases/latest | jq -r '.tag_name') && \
+    echo "Latest version: ${LATEST_VERSION}" && \
+    ARCH="$(uname -m)" && \
     if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; fi && \
     if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
-    curl -fsSL "https://github.com/anomalyco/opencode/releases/download/v${OPENCODE_VERSION}/opencode-linux-${ARCH}" -o /usr/local/bin/opencode && \
-    chmod +x /usr/local/bin/opencode
+    echo "Downloading OpenCode for linux-${ARCH}..." && \
+    curl -fsSL "https://github.com/anomalyco/opencode/releases/download/${LATEST_VERSION}/opencode-linux-${ARCH}" -o /usr/local/bin/opencode && \
+    chmod +x /usr/local/bin/opencode && \
+    echo "OpenCode installed successfully"
 
 # Verify installation
 RUN opencode --version
