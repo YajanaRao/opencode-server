@@ -1,30 +1,38 @@
 # OpenCode Web Server Docker Configuration
-# Base image: Bun on Alpine Linux (faster than Node.js)
-FROM oven/bun:1-alpine
+# Base image: Alpine Linux (minimal and secure)
+FROM alpine:3.19
 
 # Set working directory
 WORKDIR /app
 
-# Install required dependencies for OpenCode
+# Install required dependencies
 RUN apk add --no-cache \
+    bash \
+    curl \
     git \
     openssh-client \
     ca-certificates \
     wget
 
-# Install OpenCode globally using bun
-RUN bun install -g opencode-ai
+# Download and install OpenCode using official install script
+RUN curl -fsSL https://opencode.ai/install | bash --no-modify-path
+
+# Add OpenCode to PATH
+ENV PATH="/root/.opencode/bin:${PATH}"
 
 # Create a non-root user for security
 RUN addgroup -g 1001 opencode && \
     adduser -D -u 1001 -G opencode opencode
 
-# Create directory for OpenCode data
-RUN mkdir -p /home/opencode/.opencode && \
-    chown -R opencode:opencode /home/opencode
+# Copy OpenCode installation to non-root user
+RUN cp -r /root/.opencode /home/opencode/.opencode && \
+    chown -R opencode:opencode /home/opencode/.opencode
 
 # Switch to non-root user
 USER opencode
+
+# Update PATH for non-root user
+ENV PATH="/home/opencode/.opencode/bin:${PATH}"
 
 # Set environment variable for port (Render uses PORT env var)
 ENV PORT=10000
