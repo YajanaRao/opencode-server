@@ -1,25 +1,27 @@
-# OpenCode Web Server Docker Configuration
-# Use official OpenCode Docker image - maintained by OpenCode team
-FROM ghcr.io/anomalyco/opencode:latest
+# OpenCode Web Server - Simple and working
+FROM node:20-slim
 
-# Switch to root to create startup script
-USER root
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create startup script that uses PORT env var
-RUN echo '#!/bin/sh' > /start.sh && \
-    echo 'exec opencode web --hostname 0.0.0.0 --port ${PORT:-10000} --cors "*"' >> /start.sh && \
-    chmod +x /start.sh
+# Install OpenCode
+RUN npm install -g opencode-ai
 
-# Switch back to opencode user (if the base image has one)
+# Create non-root user
+RUN useradd -m -s /bin/bash opencode
 USER opencode
+WORKDIR /home/opencode
 
-# Set default port (Render will override with PORT env var)
+# Set PORT (Render will override this)
 ENV PORT=10000
 
-# Expose port
-EXPOSE ${PORT}
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/global/health || exit 1
 
-# Start OpenCode web interface using startup script
-# Note: OPENCODE_SERVER_PASSWORD and OPENCODE_SERVER_USERNAME 
-# are set via Render environment variables (see render.yaml)
-CMD ["/start.sh"]
+# Start web server
+CMD sh -c "opencode web --hostname 0.0.0.0 --port ${PORT} --cors '*'"
