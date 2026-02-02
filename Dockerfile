@@ -12,13 +12,18 @@ RUN apk add --no-cache \
     git \
     openssh-client \
     ca-certificates \
-    wget
+    wget \
+    unzip
 
 # Download and install OpenCode using official install script
-RUN curl -fsSL https://opencode.ai/install | bash --no-modify-path
+# Pass arguments properly using bash -s
+RUN curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
 
 # Add OpenCode to PATH
 ENV PATH="/root/.opencode/bin:${PATH}"
+
+# Verify installation
+RUN opencode --version
 
 # Create a non-root user for security
 RUN addgroup -g 1001 opencode && \
