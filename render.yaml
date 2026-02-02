@@ -16,6 +16,9 @@ services:
 
     # Docker configuration
     dockerfilePath: ./Dockerfile
+    
+    # Render will automatically set PORT env var and map it to public HTTPS
+    # Our container listens on the PORT that Render provides
 
     # Auto-deploy on git push to main branch
     autoDeploy: true
