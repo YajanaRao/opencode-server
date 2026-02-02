@@ -37,6 +37,15 @@ services:
       - key: NODE_ENV
         value: production
 
+      # Supabase Storage for session persistence (optional)
+      # Add these in Render Dashboard > Environment if you want persistent sessions
+      # - key: SUPABASE_URL
+      #   sync: false  # Set manually in dashboard
+      # - key: SUPABASE_SERVICE_KEY
+      #   sync: false  # Set manually in dashboard (keep secret!)
+      # - key: SUPABASE_BUCKET
+      #   value: opencode-backups
+
     # Health check configuration
     # Render pings this endpoint to verify service is healthy
     healthCheckPath: /global/health

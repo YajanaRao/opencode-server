@@ -111,6 +111,16 @@ Set these in Render Dashboard > Environment tab:
 | `OPENCODE_SERVER_USERNAME` | Access username  | `admin`                  |
 | `NODE_ENV`                 | Environment mode | `production`             |
 
+**Optional - For Session Persistence:**
+
+| Variable | Description |
+| -------- | ----------- |
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_SERVICE_KEY` | Your Supabase service_role key |
+| `SUPABASE_BUCKET` | Storage bucket (e.g., `opencode-backups`) |
+
+See "Session Persistence with Supabase" section below.
+
 ### LLM Provider Setup
 
 After deployment, you need to configure an LLM provider:
@@ -167,6 +177,55 @@ After deployment, you need to configure an LLM provider:
 - ⚠️ Sleeps after 15 minutes of inactivity
 - ⚠️ 50-second cold start after sleep
 - ⚠️ Sessions lost on restart (ephemeral storage)
+  - **Solution:** See "Session Persistence with Supabase" below
+
+## 💾 Session Persistence with Supabase (Optional)
+
+**Problem:** Render free tier loses all sessions on restart.
+
+**Solution:** Automatically backup/restore to Supabase Storage (both free tiers = $0/month!)
+
+### Quick Setup (10 minutes)
+
+1. **Create Supabase project** at https://supabase.com
+   - Create storage bucket: `opencode-backups` (keep private)
+
+2. **Get credentials** from Settings → API:
+   - Copy **Project URL**
+   - Copy **service_role key** (not anon key)
+
+3. **Add to Render** Dashboard → Environment:
+   ```
+   SUPABASE_URL=https://xxxxx.supabase.co
+   SUPABASE_SERVICE_KEY=eyJhbGc...
+   SUPABASE_BUCKET=opencode-backups
+   ```
+
+4. **Deploy** - Push to GitHub, Render auto-deploys
+
+### How It Works
+
+- **On startup:** Restores sessions from Supabase
+- **On shutdown:** Backs up sessions to Supabase
+- **Automatic:** No manual intervention needed
+
+### What Gets Backed Up
+
+- ✅ Sessions and auth credentials
+- ✅ Prompt history
+- ✅ Configuration and preferences
+
+### Troubleshooting
+
+**Backup not working?**
+- Check Render logs for errors
+- Verify credentials in Environment tab
+- Ensure bucket name matches exactly
+- Bucket must be private (not public)
+
+**Too slow?**
+- Normal on first restore (5-10 seconds)
+- Large history files can be truncated
 
 ## 🔧 Local Development
 
@@ -340,7 +399,6 @@ After initial deployment works, consider:
 ### Phase 5: Advanced Configuration
 
 - Restrict CORS to specific domains
-- Add persistent storage (volume or external DB)
 - Set up monitoring alerts
 - Configure custom domain
 
