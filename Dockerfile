@@ -2,14 +2,24 @@
 # Use official OpenCode Docker image - maintained by OpenCode team
 FROM ghcr.io/anomalyco/opencode:latest
 
-# Set environment variable for port (Render uses PORT env var)
+# Switch to root to create startup script
+USER root
+
+# Create startup script that uses PORT env var
+RUN echo '#!/bin/sh' > /start.sh && \
+    echo 'exec opencode web --hostname 0.0.0.0 --port ${PORT:-10000} --cors "*"' >> /start.sh && \
+    chmod +x /start.sh
+
+# Switch back to opencode user (if the base image has one)
+USER opencode
+
+# Set default port (Render will override with PORT env var)
 ENV PORT=10000
 
-# Expose port 10000 (Render's default port)
-EXPOSE 10000
+# Expose port
+EXPOSE ${PORT}
 
-# Start OpenCode web interface
-# - hostname 0.0.0.0: Allow external connections
-# - port from PORT env var (defaults to 10000)
-# - cors '*': Allow all origins (can be restricted later)
-CMD ["sh", "-c", "opencode web --hostname 0.0.0.0 --port ${PORT} --cors '*'"]
+# Start OpenCode web interface using startup script
+# Note: OPENCODE_SERVER_PASSWORD and OPENCODE_SERVER_USERNAME 
+# are set via Render environment variables (see render.yaml)
+CMD ["/start.sh"]
