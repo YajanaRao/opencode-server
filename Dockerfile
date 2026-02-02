@@ -1,6 +1,6 @@
 # OpenCode Web Server Docker Configuration
-# Base image: Node.js 20 on Alpine Linux (lightweight)
-FROM node:20-alpine
+# Base image: Bun on Alpine Linux (faster than Node.js)
+FROM oven/bun:1-alpine
 
 # Set working directory
 WORKDIR /app
@@ -9,10 +9,11 @@ WORKDIR /app
 RUN apk add --no-cache \
     git \
     openssh-client \
-    ca-certificates
+    ca-certificates \
+    wget
 
-# Install OpenCode globally
-RUN npm install -g opencode-ai --unsafe-perm
+# Install OpenCode globally using bun
+RUN bun install -g opencode-ai
 
 # Create a non-root user for security
 RUN addgroup -g 1001 opencode && \
