@@ -2,6 +2,9 @@
 # Base image: Alpine Linux (minimal and secure)
 FROM alpine:3.19
 
+# OpenCode version to install
+ARG OPENCODE_VERSION=1.1.48
+
 # Set working directory
 WORKDIR /app
 
@@ -12,15 +15,15 @@ RUN apk add --no-cache \
     git \
     openssh-client \
     ca-certificates \
-    wget \
-    unzip
+    wget
 
-# Download and install OpenCode using official install script
-# Pass arguments properly using bash -s
-RUN curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
-
-# Add OpenCode to PATH
-ENV PATH="/root/.opencode/bin:${PATH}"
+# Download OpenCode binary directly from GitHub releases
+# This avoids the install script's version fetch issues
+RUN ARCH="$(uname -m)" && \
+    if [ "$ARCH" = "x86_64" ]; then ARCH="x64"; fi && \
+    if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
+    curl -fsSL "https://github.com/anomalyco/opencode/releases/download/v${OPENCODE_VERSION}/opencode-linux-${ARCH}" -o /usr/local/bin/opencode && \
+    chmod +x /usr/local/bin/opencode
 
 # Verify installation
 RUN opencode --version
@@ -29,15 +32,12 @@ RUN opencode --version
 RUN addgroup -g 1001 opencode && \
     adduser -D -u 1001 -G opencode opencode
 
-# Copy OpenCode installation to non-root user
-RUN cp -r /root/.opencode /home/opencode/.opencode && \
-    chown -R opencode:opencode /home/opencode/.opencode
+# Create directory for OpenCode data
+RUN mkdir -p /home/opencode/.opencode && \
+    chown -R opencode:opencode /home/opencode
 
 # Switch to non-root user
 USER opencode
-
-# Update PATH for non-root user
-ENV PATH="/home/opencode/.opencode/bin:${PATH}"
 
 # Set environment variable for port (Render uses PORT env var)
 ENV PORT=10000
