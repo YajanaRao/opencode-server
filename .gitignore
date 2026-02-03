@@ -10,6 +10,9 @@ opencode.db
 *.db-shm
 *.db-wal
 
+# Notes repository (cloned by GitHub Actions)
+opencode/
+
 # Logs
 logs/
 *.log

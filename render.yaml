@@ -17,6 +17,10 @@ services:
     # Docker configuration
     dockerfilePath: ./Dockerfile
     
+    # Docker build arguments
+    # Pass GITHUB_TOKEN to clone private Notes repository during build
+    dockerCommand: docker build --build-arg GITHUB_TOKEN=$GITHUB_TOKEN -t opencode-web .
+    
     # Render will automatically set PORT env var and map it to public HTTPS
     # Our container listens on the PORT that Render provides
 
@@ -26,6 +30,11 @@ services:
     # Environment variables
     # These will be set in Render Dashboard
     envVars:
+      # GitHub token for cloning private Notes repository (used during build)
+      # Create at: https://github.com/settings/tokens
+      # Required scope: repo (full control of private repositories)
+      - key: GITHUB_TOKEN
+        sync: false  # Set manually in Render Dashboard (keep secret!)
       # Authentication credentials
       - key: OPENCODE_SERVER_PASSWORD
         generateValue: true # Render auto-generates secure password
