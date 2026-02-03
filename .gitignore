@@ -10,6 +10,9 @@ opencode.db
 *.db-shm
 *.db-wal
 
+# Notes repository (cloned during Docker build)
+opencode/
+
 # Logs
 logs/
 *.log

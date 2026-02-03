@@ -1,6 +1,9 @@
 # OpenCode Web Server - Simple and working
 FROM node:20-slim
 
+# Build argument for GitHub token (to clone private Notes repo)
+ARG GITHUB_TOKEN
+
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     curl \
@@ -15,6 +18,15 @@ RUN npm install -g opencode-ai
 RUN useradd -m -s /bin/bash opencode
 USER opencode
 WORKDIR /home/opencode
+
+# Clone Notes repository into opencode folder
+RUN if [ -n "$GITHUB_TOKEN" ]; then \
+        mkdir -p opencode && \
+        git clone https://${GITHUB_TOKEN}@github.com/YajanaRao/Notes.git opencode/notes && \
+        echo "Notes repository cloned successfully"; \
+    else \
+        echo "GITHUB_TOKEN not provided, skipping Notes clone"; \
+    fi
 
 # Set PORT (Render will override this)
 ENV PORT=10000
