@@ -1,7 +1,19 @@
 # Scheduled Tasks Feature - Quick Summary
 
+## 🎯 TL;DR - The Perfect Solution Found!
+
+**New Discovery**: [OpenCode-Scheduler](https://github.com/different-ai/opencode-scheduler) ⭐
+
+✅ **Use opencode-scheduler** - It's specifically built for OpenCode and is the ideal solution!
+
+---
+
+## Original Analysis
+
 **Question**: Does nanoclaw have a scheduled tasks feature?  
 **Answer**: ✅ **YES** - Fully implemented and production-ready
+
+**But**: Nanoclaw is a WhatsApp bot, not compatible with OpenCode.
 
 ---
 
@@ -218,6 +230,40 @@ See [NANOCLAW_SCHEDULED_TASKS_ANALYSIS.md](./NANOCLAW_SCHEDULED_TASKS_ANALYSIS.m
 
 ---
 
+## 🆕 Better Solution: OpenCode-Scheduler
+
+After analyzing nanoclaw, we discovered **[opencode-scheduler](https://github.com/different-ai/opencode-scheduler)** - the perfect solution!
+
+### Why It's Better
+
+| Aspect | Nanoclaw | OpenCode-Scheduler | Winner |
+|--------|----------|-------------------|--------|
+| Purpose | WhatsApp bot | OpenCode automation | ⭐ OpenCode-Scheduler |
+| Installation | Separate app | Simple plugin | ⭐ OpenCode-Scheduler |
+| Setup | Complex | One config line | ⭐ OpenCode-Scheduler |
+| OS Integration | None | Native schedulers | ⭐ OpenCode-Scheduler |
+| Compatibility | WhatsApp only | Any OpenCode | ⭐ OpenCode-Scheduler |
+| Maintenance | High | Low | ⭐ OpenCode-Scheduler |
+
+### Quick Start
+
+```json
+// opencode.json
+{
+  "plugin": ["opencode-scheduler"]
+}
+```
+
+Then just say:
+```
+Schedule a daily job at 9am to check my email
+```
+
+**See [OPENCODE_SCHEDULER_SOLUTION.md](./OPENCODE_SCHEDULER_SOLUTION.md) for complete details!**
+
+---
+
 **Analysis Date**: February 23, 2026  
-**Repository**: https://github.com/qwibitai/nanoclaw  
-**Conclusion**: Nanoclaw has excellent scheduled tasks support, but it's not directly applicable to opencode-server's use case.
+**Original Analysis**: https://github.com/qwibitai/nanoclaw  
+**Recommended Solution**: ⭐ https://github.com/different-ai/opencode-scheduler  
+**Conclusion**: OpenCode-Scheduler is the perfect solution for scheduled tasks with OpenCode!

@@ -353,9 +353,10 @@ After initial deployment works, consider:
 - [Docker Documentation](https://docs.docker.com)
 
 ### Research & Comparisons
-- [Scheduled Tasks Summary](./SCHEDULED_TASKS_SUMMARY.md) - Quick reference on nanoclaw's scheduled tasks feature
-- [Nanoclaw Analysis](./NANOCLAW_SCHEDULED_TASKS_ANALYSIS.md) - Complete technical deep-dive
-- [Architecture Comparison](./ARCHITECTURE_COMPARISON.md) - Visual comparison of nanoclaw vs opencode-server
+- **⭐ [OpenCode-Scheduler Solution](./OPENCODE_SCHEDULER_SOLUTION.md)** - The perfect scheduled tasks solution for OpenCode!
+- [Scheduled Tasks Summary](./SCHEDULED_TASKS_SUMMARY.md) - Quick comparison of options
+- [Nanoclaw Analysis](./NANOCLAW_SCHEDULED_TASKS_ANALYSIS.md) - Technical deep-dive (for reference)
+- [Architecture Comparison](./ARCHITECTURE_COMPARISON.md) - Visual comparison of different approaches
 
 ## 🆘 Support
 
