@@ -346,10 +346,16 @@ After initial deployment works, consider:
 
 ## 📚 Resources
 
+### OpenCode & Deployment
 - [OpenCode Documentation](https://opencode.ai/docs)
 - [OpenCode Web Guide](https://opencode.ai/docs/web/)
 - [Render Documentation](https://render.com/docs)
 - [Docker Documentation](https://docs.docker.com)
+
+### Research & Comparisons
+- [Scheduled Tasks Summary](./SCHEDULED_TASKS_SUMMARY.md) - Quick reference on nanoclaw's scheduled tasks feature
+- [Nanoclaw Analysis](./NANOCLAW_SCHEDULED_TASKS_ANALYSIS.md) - Complete technical deep-dive
+- [Architecture Comparison](./ARCHITECTURE_COMPARISON.md) - Visual comparison of nanoclaw vs opencode-server
 
 ## 🆘 Support
 
