@@ -1,4 +1,12 @@
 {
   "$schema": "https://opencode.ai/schema/config.json",
-  "plugin": ["opencode-scheduler"]
+  "plugin": ["opencode-scheduler"],
+  "provider": {
+    "opencode": {
+      "options": {
+        "apiKey": "{env:OPENCODE_API_KEY}"
+      }
+    }
+  },
+  "model": "opencode/claude-sonnet-4-5"
 }

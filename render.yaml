@@ -36,6 +36,11 @@ services:
       - key: GITHUB_TOKEN
         sync: false  # Set manually in Render Dashboard (keep secret!)
       
+      # OpenCode Zen API key
+      # Get your API key at: https://opencode.ai/auth
+      - key: OPENCODE_API_KEY
+        sync: false  # Set manually in Render Dashboard (keep secret!)
+      
       # Authentication credentials
       - key: OPENCODE_SERVER_PASSWORD
         generateValue: true # Render auto-generates secure password

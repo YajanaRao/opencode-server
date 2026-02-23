@@ -51,8 +51,18 @@ Access at `https://opencode-web-xxxx.onrender.com` (username: `admin`)
 | `OPENCODE_SERVER_PASSWORD` | Access password | Auto-generated |
 | `OPENCODE_SERVER_USERNAME` | Access username | `admin` |
 | `PORT` | Server port | `10000` (Render) / `4096` (Docker) |
+| `OPENCODE_API_KEY` | OpenCode Zen API key | - |
 
 ### LLM Provider Setup
+
+**Option 1: Environment Variable (Recommended)**
+
+Set your OpenCode Zen API key as an environment variable. Get your key at [opencode.ai/auth](https://opencode.ai/auth).
+
+- **Render:** Set `OPENCODE_API_KEY` in Dashboard → Environment
+- **Docker:** Set `OPENCODE_API_KEY` in your `.env` file or export it before running
+
+**Option 2: Manual Configuration**
 
 After deployment, run `/connect` command and choose:
 - OpenCode Zen (recommended for beginners)
