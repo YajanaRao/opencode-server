@@ -1,5 +1,4 @@
 {
   "$schema": "https://opencode.ai/schema/config.json",
-  "plugin": ["opencode-scheduler"],
-  "description": "OpenCode configuration with scheduler plugin for automated task execution"
+  "plugin": ["opencode-scheduler"]
 }

@@ -1,9 +1,6 @@
 # OpenCode Web Server - Simple and working
 FROM node:20-slim
 
-# Build argument for GitHub token (to clone private Notes repo)
-ARG GITHUB_TOKEN
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     curl \
@@ -25,14 +22,9 @@ RUN mkdir -p /home/opencode/.config/opencode
 # Copy OpenCode configuration
 COPY --chown=opencode:opencode opencode.json /home/opencode/.config/opencode/opencode.json
 
-# Clone Notes repository into opencode folder
-RUN if [ -n "$GITHUB_TOKEN" ]; then \
-        mkdir -p opencode && \
-        git clone https://${GITHUB_TOKEN}@github.com/YajanaRao/Notes.git opencode/notes && \
-        echo "Notes repository cloned successfully"; \
-    else \
-        echo "GITHUB_TOKEN not provided, skipping Notes clone"; \
-    fi
+# Copy entrypoint script
+COPY --chown=opencode:opencode entrypoint.sh /home/opencode/entrypoint.sh
+RUN chmod +x /home/opencode/entrypoint.sh
 
 # Set PORT (Render will override this)
 ENV PORT=10000
@@ -41,5 +33,5 @@ ENV PORT=10000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:${PORT}/global/health || exit 1
 
-# Start headless server
-CMD sh -c "opencode serve --hostname 0.0.0.0 --port ${PORT} --cors '*'"
+# Start with entrypoint (clones/updates Notes, then starts server)
+ENTRYPOINT ["/home/opencode/entrypoint.sh"]
