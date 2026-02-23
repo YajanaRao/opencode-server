@@ -11,13 +11,19 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install OpenCode
-RUN npm install -g opencode-ai
+# Install OpenCode and plugins
+RUN npm install -g opencode-ai opencode-scheduler
 
 # Create non-root user
 RUN useradd -m -s /bin/bash opencode
 USER opencode
 WORKDIR /home/opencode
+
+# Setup OpenCode configuration directory
+RUN mkdir -p /home/opencode/.config/opencode
+
+# Copy OpenCode configuration
+COPY --chown=opencode:opencode opencode.json /home/opencode/.config/opencode/opencode.json
 
 # Clone Notes repository into opencode folder
 RUN if [ -n "$GITHUB_TOKEN" ]; then \
