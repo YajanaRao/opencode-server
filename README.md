@@ -1,6 +1,6 @@
 # OpenCode Web Server
 
-Deploy OpenCode as a password-protected web interface on Render.com.
+Deploy OpenCode as a password-protected web interface with optional scheduled task automation.
 
 ## 🎯 Overview
 
@@ -10,9 +10,10 @@ This project deploys [OpenCode](https://opencode.ai) as an always-accessible web
 
 - 🔒 Password-protected access
 - 🌐 Web-based interface (no terminal required)
-- ☁️ Hosted on Render.com (free tier)
+- ☁️ Hosted on Render.com (free tier) or self-hosted
 - 🚀 Auto-deploy from GitHub
 - 🔐 Secure environment variable management
+- ⏰ **NEW:** OpenCode-Scheduler plugin for automated tasks (dedicated servers only)
 
 ## 🔐 Security Notice
 
@@ -27,9 +28,15 @@ This project deploys [OpenCode](https://opencode.ai) as an always-accessible web
 
 ## 📋 Prerequisites
 
+**For Render.com Deployment:**
 - GitHub account
 - Render.com account (free)
 - LLM provider API key (OpenAI, Anthropic, or OpenCode Zen)
+
+**For Self-Hosted with Scheduler:**
+- Docker and Docker Compose
+- Dedicated server or local machine (scheduler requires persistent storage)
+- See [SCHEDULER_SETUP_GUIDE.md](./SCHEDULER_SETUP_GUIDE.md) for details
 
 ## 🚀 Quick Start
 
@@ -98,6 +105,40 @@ Password: [from Render Environment variables]
 ```
 
 **Note:** First access may take 50 seconds (cold start on free tier).
+
+## ⏰ Self-Hosted Deployment with Scheduler
+
+For automated task scheduling, deploy on a dedicated server or locally using Docker Compose.
+
+**⚠️ Important:** The opencode-scheduler plugin requires persistent storage and **will NOT work** on Render.com free tier (ephemeral storage).
+
+### Quick Start with Docker Compose
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/YajanaRao/opencode-server.git
+cd opencode-server
+
+# 2. Set your password
+export OPENCODE_SERVER_PASSWORD="your-secure-password"
+
+# 3. Start the server
+docker-compose up -d
+
+# 4. Access at http://localhost:4096
+# Username: admin
+# Password: (what you set above)
+```
+
+### Schedule Tasks
+
+Once running, you can create scheduled jobs using natural language:
+
+```
+Schedule a daily job at 9am to check my GitHub notifications and send me a summary
+```
+
+**See [SCHEDULER_SETUP_GUIDE.md](./SCHEDULER_SETUP_GUIDE.md) for complete documentation.**
 
 ## ⚙️ Configuration
 
@@ -346,6 +387,10 @@ After initial deployment works, consider:
 
 ## 📚 Resources
 
+### Getting Started
+- **⭐ [Scheduler Setup Guide](./SCHEDULER_SETUP_GUIDE.md)** - How to use automated task scheduling
+- [Deployment Guide](./DEPLOYMENT.md) - Step-by-step Render.com deployment
+
 ### OpenCode & Deployment
 - [OpenCode Documentation](https://opencode.ai/docs)
 - [OpenCode Web Guide](https://opencode.ai/docs/web/)
@@ -353,7 +398,7 @@ After initial deployment works, consider:
 - [Docker Documentation](https://docs.docker.com)
 
 ### Research & Comparisons
-- **⭐ [OpenCode-Scheduler Solution](./OPENCODE_SCHEDULER_SOLUTION.md)** - The perfect scheduled tasks solution for OpenCode!
+- **⭐ [OpenCode-Scheduler Solution](./OPENCODE_SCHEDULER_SOLUTION.md)** - Why scheduler is the perfect solution
 - [Scheduled Tasks Summary](./SCHEDULED_TASKS_SUMMARY.md) - Quick comparison of options
 - [Nanoclaw Analysis](./NANOCLAW_SCHEDULED_TASKS_ANALYSIS.md) - Technical deep-dive (for reference)
 - [Architecture Comparison](./ARCHITECTURE_COMPARISON.md) - Visual comparison of different approaches

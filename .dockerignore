@@ -7,6 +7,11 @@
 README.md
 LICENSE
 *.md
+!SCHEDULER_SETUP_GUIDE.md
+
+# Configuration files to INCLUDE
+!opencode.json
+!docker-compose.yml
 
 # CI/CD
 .github/
