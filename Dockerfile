@@ -22,6 +22,9 @@ RUN mkdir -p /home/opencode/.config/opencode
 # Copy OpenCode configuration
 COPY --chown=opencode:opencode opencode.json /home/opencode/.config/opencode/opencode.json
 
+# Copy heartbeat service
+COPY --chown=opencode:opencode heartbeat.js /home/opencode/heartbeat.js
+
 # Copy entrypoint script
 COPY --chown=opencode:opencode entrypoint.sh /home/opencode/entrypoint.sh
 RUN chmod +x /home/opencode/entrypoint.sh
