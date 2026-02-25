@@ -22,5 +22,8 @@ else
     echo "GITHUB_TOKEN not provided, skipping Notes sync"
 fi
 
-# Start opencode server
+# Start heartbeat service in background
+node /home/opencode/heartbeat.js &
+
+# Start opencode server in foreground
 exec opencode serve --hostname 0.0.0.0 --port ${PORT} --cors '*'

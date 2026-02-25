@@ -51,6 +51,12 @@ services:
       - key: NODE_ENV
         value: production
 
+      # Heartbeat configuration
+      # Interval in minutes for self-ping to prevent sleep (default: 14 minutes)
+      # Render free tier sleeps after 15 minutes of inactivity
+      - key: HEARTBEAT_INTERVAL
+        value: 14
+
     # Health check configuration
     # Render pings this endpoint to verify service is healthy
     healthCheckPath: /global/health

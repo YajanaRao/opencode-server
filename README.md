@@ -6,6 +6,7 @@ Deploy [OpenCode](https://opencode.ai) as a password-protected web interface wit
 
 - 🔒 Password-protected web interface
 - 🌐 Access from anywhere via browser
+- ❤️ Automatic heartbeat to prevent Render free tier sleep
 - ⏰ Automated task scheduling (self-hosted only)
 - ☁️ Free deployment on Render.com
 - 🐳 Or self-host with Docker
@@ -52,6 +53,7 @@ Access at `https://opencode-web-xxxx.onrender.com` (username: `admin`)
 | `OPENCODE_SERVER_USERNAME` | Access username | `admin` |
 | `PORT` | Server port | `10000` (Render) / `4096` (Docker) |
 | `OPENCODE_API_KEY` | OpenCode Zen API key | - |
+| `HEARTBEAT_INTERVAL` | Heartbeat interval (minutes) | `14` |
 
 ### LLM Provider Setup
 
@@ -83,6 +85,23 @@ After deployment, run `/connect` command and choose:
 - Only works with persistent storage (self-hosted)
 - Render free tier has ephemeral storage
 - Alternative: Use GitHub Actions
+
+## Heartbeat System
+
+The heartbeat service automatically pings the server every 14 minutes (configurable) to prevent Render's free tier from sleeping after 15 minutes of inactivity.
+
+**How it works:**
+- A background Node.js process sends periodic health check requests
+- Configurable via `HEARTBEAT_INTERVAL` environment variable
+- Extensible for future scheduled tasks (daily summaries, notifications, etc.)
+
+**Configuration:**
+```bash
+# Change heartbeat interval (in minutes)
+HEARTBEAT_INTERVAL=10
+```
+
+**Note:** The heartbeat runs automatically when deployed. No additional setup needed!
 
 ## What's Inside
 

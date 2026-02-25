@@ -11,6 +11,8 @@ services:
       - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD:-changeme}
       - OPENCODE_SERVER_USERNAME=admin
       - NODE_ENV=production
+      # Heartbeat interval in minutes (default: 14)
+      - HEARTBEAT_INTERVAL=14
       # OpenCode Zen API key 
       - OPENCODE_API_KEY=${OPENCODE_API_KEY}
       # Optional: Add GITHUB_TOKEN if you have a Notes repository
