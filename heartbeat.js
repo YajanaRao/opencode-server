@@ -17,10 +17,16 @@ const http = require('http');
 // Configuration from environment variables
 const PORT = process.env.PORT || 10000;
 const HEARTBEAT_INTERVAL = process.env.HEARTBEAT_INTERVAL || 14; // minutes
+const USERNAME = process.env.OPENCODE_SERVER_USERNAME || 'admin';
+const PASSWORD = process.env.OPENCODE_SERVER_PASSWORD || '';
 const HEARTBEAT_URL = `http://localhost:${PORT}/global/health`;
 
 // Convert minutes to milliseconds
 const INTERVAL_MS = HEARTBEAT_INTERVAL * 60 * 1000;
+
+// Create Basic Auth header
+const auth = Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64');
+const authHeader = `Basic ${auth}`;
 
 /**
  * Ping the health check endpoint to keep the service alive
@@ -28,7 +34,14 @@ const INTERVAL_MS = HEARTBEAT_INTERVAL * 60 * 1000;
 function ping() {
   const startTime = Date.now();
   
-  const req = http.get(HEARTBEAT_URL, (res) => {
+  const options = {
+    method: 'GET',
+    headers: {
+      'Authorization': authHeader
+    }
+  };
+  
+  const req = http.get(HEARTBEAT_URL, options, (res) => {
     const duration = Date.now() - startTime;
     const timestamp = new Date().toISOString();
     
@@ -58,7 +71,14 @@ function ping() {
  * Wait for server to be ready before starting heartbeat
  */
 function waitForServer(maxAttempts = 30, attempt = 1) {
-  const req = http.get(HEARTBEAT_URL, (res) => {
+  const options = {
+    method: 'GET',
+    headers: {
+      'Authorization': authHeader
+    }
+  };
+  
+  const req = http.get(HEARTBEAT_URL, options, (res) => {
     if (res.statusCode === 200) {
       const timestamp = new Date().toISOString();
       console.log(`[${timestamp}] ✅ Server is ready, starting heartbeat service`);
