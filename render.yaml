@@ -6,8 +6,17 @@ services:
     name: opencode-web
     env: docker
 
-    # Plan: Free tier (512MB RAM, 0.1 CPU shared)
-    # Perfect for occasional use - sleeps after 15min inactivity
+    # Plan: Free tier (512MB RAM, 0.1 CPU shared).
+    #
+    # Fine for occasional interactive use: you open the URL, it wakes in ~1min,
+    # you work. Understand the two hard limits before relying on it:
+    #   - Spins down after 15 min without inbound traffic. Anything that needs
+    #     to run on its own (scheduled jobs, a chat gateway that polls) will
+    #     simply never fire, because nothing arrives to wake it.
+    #   - No persistent disk on free (disks are paid-only). The filesystem is
+    #     ephemeral, so ~/.config/opencode - scheduler state, session history -
+    #     is wiped on every spin-up and every deploy.
+    # For always-on or stateful use, this needs a paid plan or a real VPS.
     plan: free
 
     # Region: Singapore (closest to India)
@@ -16,11 +25,14 @@ services:
 
     # Docker configuration
     dockerfilePath: ./Dockerfile
-    
-    # Docker build arguments
-    # Pass GITHUB_TOKEN to clone private Notes repository during build
-    dockerCommand: docker build --build-arg GITHUB_TOKEN=$GITHUB_TOKEN -t opencode-web .
-    
+
+    # NOTE: there was a `dockerCommand: docker build --build-arg GITHUB_TOKEN=...`
+    # here. It was dead config - Render's dockerCommand overrides the container's
+    # *run* command, it does not build the image, and the Dockerfile declares no
+    # ARG GITHUB_TOKEN anyway. The Notes clone happens at runtime in
+    # entrypoint.sh using the env var below, which is the right place for it
+    # (a --build-arg token would be baked into the image layers).
+
     # Render will automatically set PORT env var and map it to public HTTPS
     # Our container listens on the PORT that Render provides
 
@@ -51,15 +63,22 @@ services:
       - key: NODE_ENV
         value: production
 
-    # Health check configuration
-    # Render pings this endpoint to verify service is healthy
-    healthCheckPath: /global/health
+    # Health check: intentionally NOT set.
+    #
+    # This was `healthCheckPath: /global/health`, which broke every deploy.
+    # OPENCODE_SERVER_PASSWORD (set above) enables HTTP basic auth on the whole
+    # server, Render's health prober does not send credentials, so the probe
+    # got 401, Render read that as unhealthy, and the deploy failed.
+    # See github.com/anomalyco/opencode/issues/12805.
+    #
+    # Render requires a 2xx and cannot be told to accept 401, and opencode has
+    # no unauthenticated health endpoint, so there is nothing valid to point at.
+    # With no healthCheckPath, Render considers the service live once the port
+    # is bound - which is the correct signal here. The container's own
+    # HEALTHCHECK (in the Dockerfile) does the real liveness check.
 
-    # Build configuration
-    buildCommand: echo "Using Docker, no build command needed"
-
-    # Start command (handled by Dockerfile CMD)
-    # No startCommand needed - Docker CMD is used
+    # Start command handled by the Dockerfile ENTRYPOINT.
+    # buildCommand omitted - meaningless with env: docker.
 
 # Deployment notes:
 # 1. Push this repo to GitHub

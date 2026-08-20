@@ -31,7 +31,8 @@ ENV PORT=10000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/global/health || exit 1
+    CMD curl -s -o /dev/null -w '%{http_code}' "http://localhost:${PORT}/global/health" \
+        | grep -qE '^(200|401)$'
 
 # Start with entrypoint (clones/updates Notes, then starts server)
 ENTRYPOINT ["/home/opencode/entrypoint.sh"]

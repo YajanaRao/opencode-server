@@ -6,8 +6,8 @@ Deploy [OpenCode](https://opencode.ai) as a password-protected web interface wit
 
 - 🔒 Password-protected web interface
 - 🌐 Access from anywhere via browser
-- ⏰ Automated task scheduling (self-hosted only)
-- ☁️ Free deployment on Render.com
+- ⏰ Automated task scheduling (needs persistent storage + an always-on host — see [Troubleshooting](#troubleshooting))
+- ☁️ Free deployment on Render.com (interactive use only — sleeps after 15min, no persistent disk)
 - 🐳 Or self-host with Docker
 
 ## Quick Start
@@ -42,14 +42,26 @@ Access at `https://opencode-web-xxxx.onrender.com` (username: `admin`)
 
 **Note:** Scheduler doesn't persist on Render free tier (ephemeral storage). Use GitHub Actions for scheduled tasks instead.
 
+## Security
+
+Read this before putting the URL anywhere public.
+
+OpenCode's **only** authentication is HTTP basic auth via `OPENCODE_SERVER_PASSWORD`. There is no bearer-token support, no rate limiting, no lockout, and no 2FA — requests for token auth were closed as not planned ([#24874](https://github.com/anomalyco/opencode/issues/24874), [#5256](https://github.com/anomalyco/opencode/issues/5256)). Behind that single password sits an agent with shell access, your `OPENCODE_API_KEY`, and your `GITHUB_TOKEN`.
+
+Upstream's position is that server mode is opt-in and hardening it is the operator's job, so don't expect the framework to protect you.
+
+**Recommended:** don't expose this to the internet at all. Put the host on a private network ([Tailscale](https://tailscale.com) or WireGuard) and reach it from your own devices. That removes the public attack surface entirely, which is worth more than any password.
+
+If you do expose it publicly: use a long random password, serve it only over HTTPS (Render does this for you), and never enable `--mdns` on an untrusted network.
+
 ## Configuration
 
 ### Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `OPENCODE_SERVER_PASSWORD` | Access password | Auto-generated |
-| `OPENCODE_SERVER_USERNAME` | Access username | `admin` |
+| `OPENCODE_SERVER_PASSWORD` | Access password | **Required** — the container refuses to start without it. Render generates one automatically via `render.yaml`. |
+| `OPENCODE_SERVER_USERNAME` | Access username | `admin` (opencode's own default is `opencode`) |
 | `PORT` | Server port | `10000` (Render) / `4096` (Docker) |
 | `OPENCODE_API_KEY` | OpenCode Zen API key | - |
 
@@ -80,9 +92,15 @@ After deployment, run `/connect` command and choose:
 - Try incognito/private browsing mode
 
 **Scheduler not working?**
-- Only works with persistent storage (self-hosted)
-- Render free tier has ephemeral storage
-- Alternative: Use GitHub Actions
+
+Scheduling needs two things this setup does not always provide:
+
+- **Persistent storage.** Render's free tier has an ephemeral filesystem and no persistent disk (disks are paid-only), so job definitions are wiped on every spin-up and deploy.
+- **An always-on process.** Free web services spin down after 15 minutes without inbound traffic. A scheduled job cannot wake a sleeping service, so it simply never fires.
+
+There's also a container caveat: [opencode-scheduler](https://github.com/different-ai/opencode-scheduler) delegates to the OS scheduler (launchd/systemd), and there is no systemd in this image — it falls back to cron, which is less predictable.
+
+OpenCode has no native scheduling and won't get it ([#11232](https://github.com/anomalyco/opencode/issues/11232), closed as not planned). For scheduling that actually persists, use a SQLite-backed plugin such as `opencode-cron` on a host with a real disk, or GitHub Actions.
 
 ## What's Inside
 

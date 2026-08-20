@@ -8,7 +8,10 @@ services:
       - "4096:4096"
     environment:
       - PORT=4096
-      - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD:-changeme}
+      # No default on purpose. This used to fall back to "changeme", which
+      # silently published a shell-capable agent behind a known password.
+      # Unset now means the entrypoint refuses to start.
+      - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD:?set OPENCODE_SERVER_PASSWORD before running docker-compose}
       - OPENCODE_SERVER_USERNAME=admin
       - NODE_ENV=production
       # OpenCode Zen API key 
@@ -24,7 +27,10 @@ services:
       # - ./workspace:/home/opencode/workspace
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4096/global/health"]
+      # Accept 401 as healthy - basic auth is always on, and an unauthenticated
+      # probe returning 401 proves the server is up and enforcing auth.
+      # CMD-SHELL (not CMD) so the pipe is interpreted.
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' http://localhost:4096/global/health | grep -qE '^(200|401)$$'"]
       interval: 30s
       timeout: 10s
       retries: 3
